@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>CTrieSet</PackageId>
+    <Description>Unity Container Engine</Description>
+    <Copyright>Eugene Sadovoi</Copyright>
+    <PackageProjectUrl>https://github.com/ENikS/CTrieSet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ENikS/CTrieSet</RepositoryUrl>
+    <License>https://github.com/ENikS/CTrieSet/blob/master/LICENSE</License>
+    <RepositoryType>git</RepositoryType>
+    <Authors>Eugene Sadovoi</Authors>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net50</TargetFramework>
+  </PropertyGroup>
+
+  <!-- Sourcelink -->
+
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <!-- Release Notes -->
+
+  <Target Name="PreparePackageReleaseNotesFromFile" BeforeTargets="GenerateNuspec">
+    <ReadLinesFromFile File="../RELEASE-NOTES.txt">
+      <Output TaskParameter="Lines" ItemName="ReleaseNoteLines" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <PackageReleaseNotes>@(ReleaseNoteLines, '%0a')</PackageReleaseNotes>
+    </PropertyGroup>
+  </Target>
+
+</Project>
