@@ -1,95 +1,115 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
+using System.Numerics;
+using System.Threading;
 
-namespace Hamt
+namespace CTrie
 {
-    public partial class CTrieSet<T> : ISet<T>
+    public partial class CTrieSet<T> : Node
     {
-        public int Count => throw new NotImplementedException();
+        #region Constants
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        const int SIZE = 6;
 
-        public void Clear()
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        const int BUCKET_SIZE = 64;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        const uint MASK = BUCKET_SIZE - 1;
+
+        #endregion
+
+
+        #region Fields
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private int _count;
+        
+        #endregion
+
+
+        #region Constructors
+
+        public CTrieSet()
+            : base(FillRootArray())
         {
-            throw new NotImplementedException();
         }
 
-        public bool Contains(T item)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void ExceptWith(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+        public int Length => _count;
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
 
-        public void IntersectWith(IEnumerable<T> other)
+        public ref T this[uint hash]
         {
-            throw new NotImplementedException();
-        }
+            get 
+            {
+                Leaf leaf;
+                Node childNode;
+                Node activeNode;
+                Node parentNode;
+                INode formerNode;
 
-        public bool IsProperSubsetOf(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+                int index = 0;
 
-        public bool IsProperSupersetOf(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+                do
+                {
+                    int parentIndex = 0;
 
-        public bool IsSubsetOf(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+                    parentNode = this;
+                    activeNode = this;
 
-        public bool IsSupersetOf(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+                    var shift = BitOperations.RotateLeft(hash, SIZE);
+                    var position = (ulong)1 << (int)(shift & MASK);
 
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+                    while ((activeNode.Flags & position) != 0)
+                    {
+                        index = BitOperations.PopCount(position - 1 & activeNode.Flags);
 
-        public bool Remove(T item)
-        {
-            throw new NotImplementedException();
-        }
+                        if ((activeNode.Leafs & position) != 0)
+                        {
+                            leaf = (Leaf)activeNode.Nodes[index];
 
-        public bool SetEquals(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+                            if (leaf.Hash == shift) return ref leaf.Value;
 
-        public void SymmetricExceptWith(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+                            var other = new Leaf(shift);
+                            //var subst = new Node()
+                            formerNode = Interlocked.CompareExchange(ref parentNode.Nodes[parentIndex],
+                                GetSplitNode(leaf, other), activeNode);
 
-        public void UnionWith(IEnumerable<T> other)
-        {
-            throw new NotImplementedException();
-        }
+                            // Return on success
+                            if (true == ReferenceEquals(formerNode, activeNode))
+                            {
+                                Interlocked.Increment(ref _count);
+                                return ref other.Value;
+                            }
 
-        void ICollection<T>.Add(T item) => Add(item);
+                            // Roll back and start over if failed
+                            activeNode = (Node)formerNode;
+                            continue;
+                        }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
+                        parentNode = activeNode;
+                        parentIndex = index;
+                        activeNode = (Node)activeNode.Nodes[index];
+
+                        shift = BitOperations.RotateLeft(shift, SIZE);
+                        position = (ulong)1 << (int)(shift & MASK);
+                    }
+
+                    leaf = new Leaf(shift);
+
+                    childNode = new Node(position, leaf, activeNode);
+
+                    formerNode = Interlocked.CompareExchange(ref parentNode.Nodes[index], childNode, activeNode);
+
+                } while (false == ReferenceEquals(formerNode, activeNode));
+
+                Interlocked.Increment(ref _count);
+
+                return ref leaf.Value; 
+            }
         }
     }
 }
