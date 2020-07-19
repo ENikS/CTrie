@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Threading;
 
@@ -98,10 +99,20 @@ namespace CTrie
                         position = (ulong)1 << (int)(shift & MASK);
                     }
 
+                    // Calculate metadata
+                    var flags = activeNode.Flags | position;
+                    var length = activeNode.Nodes.Length;
+                    var nodes = new INode[length + 1];
+                    var point = BitOperations.PopCount(position - 1 & flags);
+
+                    // Copy other entries if required
+                    if (0 < point) Array.Copy(activeNode.Nodes, nodes, point);
+                    if (length > point) Array.Copy(activeNode.Nodes, point, nodes, point + 1, length - point);
+
+                    // Add leaf node to array
                     leaf = new Leaf(shift);
-
-                    childNode = new Node(position, leaf, activeNode);
-
+                    nodes[point] = leaf;
+                    childNode  = new Node(flags, activeNode.Leafs | position, nodes);
                     formerNode = Interlocked.CompareExchange(ref parentNode.Nodes[index], childNode, activeNode);
 
                 } while (false == ReferenceEquals(formerNode, activeNode));

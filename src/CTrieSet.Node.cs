@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Numerics;
 
 namespace CTrie
 {
@@ -45,22 +44,6 @@ namespace CTrie
             Flags = bitmap;
             Leafs = leafs;
             Nodes = nodes;
-        }
-
-        public Node(ulong position, INode leaf, Node node)
-        {
-            Flags = node.Flags  | position;
-            Leafs  = node.Leafs | position;
-            
-            Nodes = new INode [node.Nodes.Length + 1];
-
-            var length = node.Nodes.Length;
-            var index = BitOperations.PopCount(position - 1 & Flags);
-            
-            Nodes[index] = leaf;
-            
-            if (0 < index) Array.Copy(node.Nodes, Nodes, index);
-            if (length > index) Array.Copy(node.Nodes, index, Nodes, index + 1, length - index);
         }
 
         public override string ToString() => $"Nodes = {Nodes.Length}, Bitmap = {Flags:X16}, Leafs = {Leafs:X16}";
