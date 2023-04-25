@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace CTrie
+namespace HAMT
 {
     #region INode interface
 
-    public interface INode
+    public interface ITrieNode
     {
     }
 
@@ -15,31 +15,31 @@ namespace CTrie
     #region Node
 
     [DebuggerDisplay("Nodes = {Nodes.Length}")]
-    public class Node : INode
+    public class TrieNode : ITrieNode
     {
         public ulong Leafs;
         public ulong Flags;
-        public INode[] Nodes;
+        public ITrieNode[] Nodes;
 
-        public Node()
+        public TrieNode()
         {
-            Nodes = Array.Empty<INode>();
+            Nodes = Array.Empty<ITrieNode>();
         }
 
-        protected Node(INode[] nodes)
+        protected TrieNode(ITrieNode[] nodes)
         {
             Flags = ulong.MaxValue;
             Leafs  = ulong.MinValue;
             Nodes = nodes;
         }
 
-        public Node(ulong bitmap, INode[] nodes)
+        public TrieNode(ulong bitmap, ITrieNode[] nodes)
         {
             Flags = bitmap;
             Nodes = nodes;
         }
 
-        public Node(ulong bitmap, ulong leafs, INode[] nodes)
+        public TrieNode(ulong bitmap, ulong leafs, ITrieNode[] nodes)
         {
             Flags = bitmap;
             Leafs = leafs;

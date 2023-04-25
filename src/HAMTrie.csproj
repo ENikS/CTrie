@@ -11,7 +11,7 @@
     <Authors>Eugene Sadovoi</Authors>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <TargetFramework>net50</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <!-- Sourcelink -->

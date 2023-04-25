@@ -1,16 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using HAMT;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CTrie.Tests
 {
     [TestClass]
-    public partial class CTrieTests
+    public partial class HAMTrieTests
     {
         [TestMethod]
         public void Int()
         {
-            var trie = new CTrieSet<uint>();
+            var trie = new HAMTrie<uint>();
 
-            var instance = typeof(CTrieTests);
+            var instance = typeof(HAMTrieTests);
             var hash = (uint)instance.GetHashCode();
 
             trie[hash] = hash;
@@ -22,7 +23,7 @@ namespace CTrie.Tests
         public void Object()
         {
             var data = new object();
-            var trie = new CTrieSet<object>();
+            var trie = new HAMTrie<object>();
 
             var hash = (uint)data.GetHashCode();
 
@@ -36,7 +37,7 @@ namespace CTrie.Tests
         {
             var data1 = "First";
             var data2 = "Second";
-            var trie = new CTrieSet<string>();
+            var trie = new HAMTrie<string>();
 
             var hash1 = (uint)data1.GetHashCode();
             var hash2 = (uint)hash1 + 1;

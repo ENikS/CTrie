@@ -1,4 +1,4 @@
-﻿using CTrie;
+﻿using HAMT;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Node.Tests
@@ -10,7 +10,7 @@ namespace Node.Tests
         public void DefaultCtor()
         {
             // Act
-            var node = new CTrie.Node();
+            var node = new TrieNode();
 
             // Validate
             Assert.AreEqual((ulong)0, node.Flags);
@@ -24,10 +24,10 @@ namespace Node.Tests
         {
             // Arrange
             ulong flags = ulong.MaxValue / 2;
-            var nodes = new INode[0];
+            var nodes = new ITrieNode[0];
 
             // Act
-            var node = new CTrie.Node(flags, nodes);
+            var node = new TrieNode(flags, nodes);
 
             // Validate
             Assert.AreEqual(flags, node.Flags);
@@ -41,10 +41,10 @@ namespace Node.Tests
         {
             // Arrange
             ulong flags = ulong.MaxValue / 2;
-            var nodes = new INode[0];
+            var nodes = new ITrieNode[0];
 
             // Act
-            var node = new CTrie.Node(flags, flags, nodes);
+            var node = new TrieNode(flags, flags, nodes);
 
             // Validate
             Assert.AreEqual(flags, node.Flags);

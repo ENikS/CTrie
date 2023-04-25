@@ -1,17 +1,17 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
 
-namespace CTrie
+namespace HAMT
 {
-    public partial class CTrieSet<T> : Node
+    public partial class HAMTrie<T> : TrieNode
     {
         #region Initialization
 
-        private static INode[] FillRootArray()
+        private static ITrieNode[] FillRootArray()
         {
-            Node empty = new Node();
+            TrieNode empty = new TrieNode();
 
-            return new INode[]
+            return new ITrieNode[]
             {
                 empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,
                 empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,
@@ -25,7 +25,7 @@ namespace CTrie
 
         #region Split Leaf
 
-        protected virtual Node GetSplitNode(Leaf one, Leaf two)
+        protected virtual TrieNode GetSplitNode(Leaf one, Leaf two)
         {
             // Calculate new hash
             var hashOne = (int)(one.Hash & MASK);
@@ -37,17 +37,17 @@ namespace CTrie
                 var shift = (int)(one.Hash & MASK);
                 one.Rotate();
                 two.Rotate();
-                return new Node((ulong)1 << shift, new INode[] { GetSplitNode(one, two) });
+                return new TrieNode((ulong)1 << shift, new ITrieNode[] { GetSplitNode(one, two) });
             }
 
             // Create split entry
             var array = hashOne > hashTwo
-                      ? new INode[] { two, one }
-                      : new INode[] { one, two };
+                      ? new ITrieNode[] { two, one }
+                      : new ITrieNode[] { one, two };
 
             var mask = ((ulong)1 << hashOne) | ((ulong)1 << hashTwo);
 
-            return new Node(mask, mask, array);
+            return new TrieNode(mask, mask, array);
         }
 
         #endregion
@@ -56,7 +56,7 @@ namespace CTrie
         #region Nested
 
         [DebuggerDisplay("Leaf: { Value }")]
-        public class Leaf : INode
+        public class Leaf : ITrieNode
         {
             #region Fields
 

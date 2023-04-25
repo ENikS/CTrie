@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using HAMT;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -15,11 +16,11 @@ namespace CTrie.Tests
                                                     .Where(t => t != typeof(IServiceProvider))
                                                     .Take(SizeTypes)
                                                     .ToArray();
-        static uint[] Codes = TestTypes.Select(t => (uint)t.GetHashCode())
+        static uint[] Codes = TestTypes.Select(t => (uint)t.MetadataToken)
                                 .Distinct()
                                 .ToArray();
 
-        CTrieSet<Type> Trie = new CTrieSet<Type>();
+        HAMTrie<Type> Trie = new HAMTrie<Type>();
         ConcurrentDictionary<uint, Type> Dictionary = new ConcurrentDictionary<uint, Type>();
 
         [TestInitialize]
@@ -27,7 +28,7 @@ namespace CTrie.Tests
         {
             foreach (var type in TestTypes)
             {
-                var hash = (uint)type.GetHashCode();
+                var hash = (uint)type.MetadataToken;
 
                 Trie[hash] = type;
                 Dictionary[hash] = type;
@@ -58,7 +59,7 @@ namespace CTrie.Tests
         [TestMethod]
         public void LoadCTrieSet()
         {
-            var trie = new CTrieSet<Type>();
+            var trie = new HAMTrie<Type>();
             uint hash = 0;
 
             foreach (var type in TestTypes)

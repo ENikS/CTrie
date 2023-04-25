@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using HAMT;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Numerics;
 
 namespace CTrie.Tests
@@ -11,7 +12,7 @@ namespace CTrie.Tests
         {
             // Arrange
             var hash = (uint)typeof(LeafTests).GetHashCode();
-            var leaf = new CTrieSet<object>.Leaf(hash);
+            var leaf = new HAMTrie<object>.Leaf(hash);
 
             // Validate
             Assert.AreEqual(hash, leaf.Hash);
@@ -23,7 +24,7 @@ namespace CTrie.Tests
         {
             // Arrange
             var hash = (uint)typeof(LeafTests).GetHashCode();
-            var leaf = new CTrieSet<object>.Leaf(hash);
+            var leaf = new HAMTrie<object>.Leaf(hash);
 
             // Act
             hash = BitOperations.RotateLeft(hash, 6);

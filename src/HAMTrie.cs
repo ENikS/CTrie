@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Threading;
 
-namespace CTrie
+namespace HAMT
 {
-    public partial class CTrieSet<T> : Node
+    public partial class HAMTrie<T> : TrieNode
     {
         #region Constants
 
@@ -31,7 +31,7 @@ namespace CTrie
 
         #region Constructors
 
-        public CTrieSet()
+        public HAMTrie()
             : base(FillRootArray())
         {
         }
@@ -47,10 +47,10 @@ namespace CTrie
             get 
             {
                 Leaf leaf;
-                Node childNode;
-                Node activeNode;
-                Node parentNode;
-                INode formerNode;
+                TrieNode childNode;
+                TrieNode activeNode;
+                TrieNode parentNode;
+                ITrieNode formerNode;
 
                 int index = 0;
 
@@ -87,13 +87,13 @@ namespace CTrie
                             }
 
                             // Roll back and start over if failed
-                            activeNode = (Node)formerNode;
+                            activeNode = (TrieNode)formerNode;
                             continue;
                         }
 
                         parentNode = activeNode;
                         parentIndex = index;
-                        activeNode = (Node)activeNode.Nodes[index];
+                        activeNode = (TrieNode)activeNode.Nodes[index];
 
                         shift = BitOperations.RotateLeft(shift, SIZE);
                         position = (ulong)1 << (int)(shift & MASK);
@@ -102,7 +102,7 @@ namespace CTrie
                     // Calculate metadata
                     var flags = activeNode.Flags | position;
                     var length = activeNode.Nodes.Length;
-                    var nodes = new INode[length + 1];
+                    var nodes = new ITrieNode[length + 1];
                     var point = BitOperations.PopCount(position - 1 & flags);
 
                     // Copy other entries if required
@@ -112,7 +112,7 @@ namespace CTrie
                     // Add leaf node to array
                     leaf = new Leaf(shift);
                     nodes[point] = leaf;
-                    childNode  = new Node(flags, activeNode.Leafs | position, nodes);
+                    childNode  = new TrieNode(flags, activeNode.Leafs | position, nodes);
                     formerNode = Interlocked.CompareExchange(ref parentNode.Nodes[index], childNode, activeNode);
 
                 } while (false == ReferenceEquals(formerNode, activeNode));

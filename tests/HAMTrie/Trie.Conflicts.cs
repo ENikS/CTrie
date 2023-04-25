@@ -1,9 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using HAMT;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 
 namespace CTrie.Tests
 {
-    public partial class CTrieTests
+    public partial class HAMTrieTests
     {
         [TestMethod]
         public void RootConflict()
@@ -99,7 +100,7 @@ namespace CTrie.Tests
 
         }
 
-        public class TestSet<T> : CTrieSet<T>
+        public class TestSet<T> : HAMTrie<T>
         {
             ManualResetEvent _event;
 
@@ -109,7 +110,7 @@ namespace CTrie.Tests
             }
 
 
-            protected override Node GetSplitNode(Leaf one, Leaf two)
+            protected override HAMT.TrieNode GetSplitNode(Leaf one, Leaf two)
             {
                 _event.WaitOne();
                 return base.GetSplitNode(one, two);
