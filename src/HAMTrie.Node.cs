@@ -15,12 +15,14 @@ namespace HAMT
 
     #region Node
 
-    [DebuggerDisplay("Nodes = {Nodes.Length}")]
     public class TrieNode : INode
     {
-        public ulong Bitmap;
         public INode[] Nodes;
 
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public ulong Bitmap;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public bool IsLeaf => false;
 
         public TrieNode()
@@ -34,7 +36,7 @@ namespace HAMT
             Nodes = nodes;
         }
 
-        public override string ToString() => $"Nodes = {Nodes.Length}, Bitmap = {Bitmap:X16}";
+        public override string ToString() => $"Bitmap: {Bitmap:X16},\t Nodes: {Nodes.Length}";
     }
 
     #endregion
