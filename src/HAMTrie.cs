@@ -32,8 +32,10 @@ namespace HAMT
         #region Constructors
 
         public HAMTrie()
-            : base(FillRootArray())
         {
+            Nodes = new INode[BUCKET_SIZE];
+            Bitmap = 0xFFFFFFFFFFFFFFFF;
+            Array.Fill(Nodes, new TrieNode());
         }
 
         #endregion
@@ -48,25 +50,22 @@ namespace HAMT
             {
                 Leaf leaf;
                 TrieNode childNode;
-                TrieNode activeNode;
-                TrieNode parentNode;
-                ITrieNode formerNode;
+                TrieNode parentNode = this;
+                TrieNode activeNode = this;
+                INode formerNode;
 
-                int index = 0;
 
                 do
                 {
+                    int index = 0;
+                    var shift = hash;
+                    var position = (ulong)1 << (int)(hash & MASK);
+
                     int parentIndex = 0;
 
-                    parentNode = this;
-                    activeNode = this;
-
-                    var shift = BitOperations.RotateLeft(hash, SIZE);
-                    var position = (ulong)1 << (int)(shift & MASK);
-
-                    while ((activeNode.Flags & position) != 0)
+                    while ((activeNode.Bitmap & position) != 0)
                     {
-                        index = BitOperations.PopCount(position - 1 & activeNode.Flags);
+                        index = BitOperations.PopCount(position - 1 & activeNode.Bitmap);
 
                         if ((activeNode.Leafs & position) != 0)
                         {
@@ -95,14 +94,14 @@ namespace HAMT
                         parentIndex = index;
                         activeNode = (TrieNode)activeNode.Nodes[index];
 
-                        shift = BitOperations.RotateLeft(shift, SIZE);
+                        shift = shift >> SIZE;
                         position = (ulong)1 << (int)(shift & MASK);
                     }
 
                     // Calculate metadata
-                    var flags = activeNode.Flags | position;
+                    var flags = activeNode.Bitmap | position;
                     var length = activeNode.Nodes.Length;
-                    var nodes = new ITrieNode[length + 1];
+                    var nodes = new INode[length + 1];
                     var point = BitOperations.PopCount(position - 1 & flags);
 
                     // Copy other entries if required

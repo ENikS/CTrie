@@ -9,6 +9,20 @@ namespace CTrie.Tests
     public partial class HAMTrieTests
     {
         [DataTestMethod]
+        [DataRow((uint)63)]
+        [DataRow((uint)31)]
+        [DataRow((uint)1)]
+        [DataRow((uint)0)]
+        public void LevelOne(uint hex)
+        {
+            var trie = new HAMTrie<uint>();
+
+            trie[hex] = hex;
+
+            Assert.AreEqual(hex, trie[hex]);
+        }
+
+        [DataTestMethod]
         [DataRow((uint)0x80000000)]
         public void Int_hex(uint hex)
         {
@@ -17,17 +31,6 @@ namespace CTrie.Tests
             trie[hex] = 111;
 
             Assert.AreEqual(111, trie[hex]);
-        }
-
-        [TestMethod]
-        public void Int_01()
-        {
-            var trie = new HAMTrie<uint>();
-
-            trie[0b_11111111_11111111_11111111_11111111] = 111;
-            trie[0b_00000000_00000000_00000000_00000000] = 111;
-
-            Assert.AreEqual(111, trie[0x80000000]);
         }
 
         [TestMethod]

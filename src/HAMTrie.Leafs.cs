@@ -7,11 +7,11 @@ namespace HAMT
     {
         #region Initialization
 
-        private static ITrieNode[] FillRootArray()
+        private static INode[] FillRootArray()
         {
             TrieNode empty = new TrieNode();
 
-            return new ITrieNode[]
+            return new INode[]
             {
                 empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,
                 empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,
@@ -37,13 +37,13 @@ namespace HAMT
                 var shift = (int)(one.Hash & MASK);
                 one.Rotate();
                 two.Rotate();
-                return new TrieNode((ulong)1 << shift, new ITrieNode[] { GetSplitNode(one, two) });
+                return new TrieNode((ulong)1 << shift, new INode[] { GetSplitNode(one, two) });
             }
 
             // Create split entry
             var array = hashOne > hashTwo
-                      ? new ITrieNode[] { two, one }
-                      : new ITrieNode[] { one, two };
+                      ? new INode[] { two, one }
+                      : new INode[] { one, two };
 
             var mask = ((ulong)1 << hashOne) | ((ulong)1 << hashTwo);
 
@@ -56,7 +56,7 @@ namespace HAMT
         #region Nested
 
         [DebuggerDisplay("Leaf: { Value }")]
-        public class Leaf : ITrieNode
+        public class Leaf : INode
         {
             #region Fields
 
