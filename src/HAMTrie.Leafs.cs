@@ -5,23 +5,6 @@ namespace HAMT
 {
     public partial class HAMTrie<T> : TrieNode
     {
-        #region Initialization
-
-        private static INode[] FillRootArray()
-        {
-            TrieNode empty = new TrieNode();
-
-            return new INode[]
-            {
-                empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,
-                empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,
-                empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,
-                empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,
-            };
-        }
-
-        #endregion
-
 
         #region Split Leaf
 
@@ -47,7 +30,7 @@ namespace HAMT
 
             var mask = ((ulong)1 << hashOne) | ((ulong)1 << hashTwo);
 
-            return new TrieNode(mask, mask, array);
+            return new TrieNode(mask, array);
         }
 
         #endregion
@@ -73,10 +56,12 @@ namespace HAMT
 
             #endregion
 
+            public bool IsLeaf => true;
+
 
             #region Implementation
 
-            public void Rotate() => Hash = BitOperations.RotateLeft(Hash, SIZE);
+            public void Rotate() => Hash = Hash >> SIZE;
 
             public override string ToString() => $"Hash = { Hash }, Value = { Value }";
 

@@ -5,6 +5,7 @@ using System.Threading;
 
 namespace HAMT
 {
+    [DebuggerDisplay("Nodes = {_count}")]
     public partial class HAMTrie<T> : TrieNode
     {
         #region Constants
@@ -34,7 +35,7 @@ namespace HAMT
         public HAMTrie()
         {
             Nodes = new INode[BUCKET_SIZE];
-            Bitmap = 0xFFFFFFFFFFFFFFFF;
+            Bitmap = ulong.MaxValue;
             Array.Fill(Nodes, new TrieNode());
         }
 
@@ -66,10 +67,11 @@ namespace HAMT
                     while ((activeNode.Bitmap & position) != 0)
                     {
                         index = BitOperations.PopCount(position - 1 & activeNode.Bitmap);
+                        var node = activeNode.Nodes[index];
 
-                        if ((activeNode.Leafs & position) != 0)
+                        if (node.IsLeaf)
                         {
-                            leaf = (Leaf)activeNode.Nodes[index];
+                            leaf = (Leaf)node;
 
                             if (leaf.Hash == shift) return ref leaf.Value;
 
@@ -111,7 +113,7 @@ namespace HAMT
                     // Add leaf node to array
                     leaf = new Leaf(shift);
                     nodes[point] = leaf;
-                    childNode  = new TrieNode(flags, activeNode.Leafs | position, nodes);
+                    childNode  = new TrieNode(flags, nodes);
                     formerNode = Interlocked.CompareExchange(ref parentNode.Nodes[index], childNode, activeNode);
 
                 } while (false == ReferenceEquals(formerNode, activeNode));

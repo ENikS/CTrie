@@ -7,6 +7,7 @@ namespace HAMT
 
     public interface INode
     {
+        bool IsLeaf { get; }
     }
 
     #endregion
@@ -17,20 +18,14 @@ namespace HAMT
     [DebuggerDisplay("Nodes = {Nodes.Length}")]
     public class TrieNode : INode
     {
-        public ulong Leafs;
         public ulong Bitmap;
         public INode[] Nodes;
+
+        public bool IsLeaf => false;
 
         public TrieNode()
         {
             Nodes = Array.Empty<INode>();
-        }
-
-        protected TrieNode(INode[] nodes)
-        {
-            Bitmap = ulong.MaxValue;
-            Leafs  = ulong.MinValue;
-            Nodes = nodes;
         }
 
         public TrieNode(ulong bitmap, INode[] nodes)
@@ -39,14 +34,7 @@ namespace HAMT
             Nodes = nodes;
         }
 
-        public TrieNode(ulong bitmap, ulong leafs, INode[] nodes)
-        {
-            Bitmap = bitmap;
-            Leafs = leafs;
-            Nodes = nodes;
-        }
-
-        public override string ToString() => $"Nodes = {Nodes.Length}, Bitmap = {Bitmap:X16}, Leafs = {Leafs:X16}";
+        public override string ToString() => $"Nodes = {Nodes.Length}, Bitmap = {Bitmap:X16}";
     }
 
     #endregion
