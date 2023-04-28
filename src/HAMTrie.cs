@@ -76,7 +76,7 @@ namespace HAMT
                             if (leaf.Hash == shift) return ref leaf.Value;
 
                             var other = new Leaf(shift);
-                            //var subst = new Node()
+                            
                             formerNode = Interlocked.CompareExchange(ref parentNode.Nodes[parentIndex],
                                 GetSplitNode(leaf, other), activeNode);
 
