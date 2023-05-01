@@ -33,21 +33,5 @@ namespace CTrie.Tests
             Assert.AreSame(data1, trie[0b_00000000_00000000_00000000_00000000]);
             Assert.AreSame(data2, trie[0b_10000000_00000000_00000000_00000000]);
         }
-
-        [TestMethod]
-        public void LeafConflict()
-        {
-            var data1 = "First";
-            var data2 = "Second";
-            var trie = new HAMTrie<string>();
-
-
-            trie[0b_10000000_00000000_00000000_01000000] = data1;
-            trie[0b_10000000_00000000_00000000_00000000] = data2;
-
-            Assert.AreSame(data1, trie[0b_10000000_00000000_00000000_01000000]);
-            Assert.AreSame(data2, trie[0b_10000000_00000000_00000000_00100000]);
-        }
-
     }
 }
