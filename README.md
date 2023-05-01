@@ -1,1 +1,1 @@
-# CTrie
+# Hash array mapped trie
