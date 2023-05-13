@@ -96,7 +96,7 @@ namespace HAMT
                         parentIndex = index;
                         activeNode = (TrieNode)activeNode.Nodes[index];
 
-                        shift = shift >> SIZE;
+                        shift >>= SIZE;
                         position = (ulong)1 << (int)(shift & MASK);
                     }
 
@@ -121,6 +121,39 @@ namespace HAMT
                 Interlocked.Increment(ref _count);
 
                 return ref leaf.Value; 
+            }
+        }
+
+
+        public T? this[T key]
+        { 
+            get 
+            {
+                var hash = key.GetHashCode();
+                var position = (ulong)1 << (int)(hash & MASK);
+                TrieNode activeNode = this;
+
+                while ((activeNode.Bitmap & position) != 0)
+                {
+                    var index = BitOperations.PopCount(position - 1 & activeNode.Bitmap);
+                    var node = activeNode.Nodes[index];
+
+                    if (node.IsLeaf)
+                    {
+                        var leaf = (Leaf)node;
+                        if (leaf.Hash == hash) return leaf.Value;
+                    }
+
+                    activeNode = (TrieNode)activeNode.Nodes[index];
+
+                    hash >>= SIZE;
+                    position = (ulong)1 << (int)(hash & MASK);
+                }
+
+                return default;
+            }
+            set 
+            { 
             }
         }
     }
