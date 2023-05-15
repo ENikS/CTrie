@@ -129,7 +129,7 @@ namespace HAMT
         { 
             get 
             {
-                var hash = key.GetHashCode();
+                var hash = key?.GetHashCode() ?? 0x0;
                 var position = (ulong)1 << (int)(hash & MASK);
                 TrieNode activeNode = this;
 

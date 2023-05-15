@@ -50,7 +50,7 @@ namespace CTrie.Tests
         {
             foreach (var hash in Codes)
             {
-                var value = Dictionary[hash];
+                Dictionary.TryGetValue(hash, out var value);
                 Assert.IsNotNull(value);
             }
         }
@@ -83,7 +83,7 @@ namespace CTrie.Tests
             {
                 hash = (uint)type.GetHashCode();
 
-                set[hash] = type;
+                set.TryAdd(hash, type);
             }
 
             Assert.IsNotNull(set[hash]);
